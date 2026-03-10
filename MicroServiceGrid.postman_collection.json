@@ -1,0 +1,394 @@
+{
+  "info": {
+    "_postman_id": "c1f8f7d3-1234-4f5d-bf3a-9a8f7d3c4b5a",
+    "name": "MicroServiceGrid - Portfolio Collection",
+    "description": "Postman collection for MicroServiceGrid project. Contains all unique endpoints for Products, Orders, Inventory, and File services. Ready for portfolio demo.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/actuator/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["actuator", "health"]
+        },
+        "description": "Check overall health status of microservices."
+      },
+      "response": []
+    },
+    {
+      "name": "Get All Products (Public)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/products?page=0&size=10",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "products"],
+          "query": [
+            {"key": "page", "value": "0"},
+            {"key": "size", "value": "10"}
+          ]
+        },
+        "description": "Retrieve paginated list of all public products."
+      },
+      "response": []
+    },
+    {
+      "name": "Get Product By SKU (Public)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/products/{{sku}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "products", "{{sku}}"]
+        },
+        "description": "Retrieve product details by SKU."
+      },
+      "response": []
+    },
+    {
+      "name": "Admin - Get All Products",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {"key": "token", "value": "{{adminToken}}", "type": "string"}
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/products?page=0&size=10&sortBy=createdAt&sortDir=desc",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "admin", "products"],
+          "query": [
+            {"key": "page", "value": "0"},
+            {"key": "size", "value": "10"},
+            {"key": "sortBy", "value": "createdAt"},
+            {"key": "sortDir", "value": "desc"}
+          ]
+        },
+        "description": "Retrieve all products as admin, paginated and sorted by creation date descending."
+      },
+      "response": []
+    },
+    {
+      "name": "Admin - Create Single Product",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {"key": "token", "value": "{{adminToken}}", "type": "string"}
+          ]
+        },
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"sku\": \"SKU123\",\n  \"name\": \"Samsung A90\",\n  \"description\": \"Smartphone\",\n  \"price\": 1000\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/products",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "admin", "products"]
+        },
+        "description": "Create a single product (admin access)."
+      },
+      "response": []
+    },
+    {
+      "name": "Admin - Batch Create Products",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {"key": "token", "value": "{{adminToken}}", "type": "string"}
+          ]
+        },
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "[\n  {\"sku\": \"SKU124\",\"name\": \"iPhone 14 Pro\",\"description\": \"Apple smartphone\",\"price\": 1350},\n  {\"sku\": \"SKU125\",\"name\": \"Xiaomi Redmi Note 12\",\"description\": \"Affordable smartphone\",\"price\": 400}\n]"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/products/batch",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "admin", "products", "batch"]
+        },
+        "description": "Create multiple products in batch (admin access)."
+      },
+      "response": []
+    },
+    {
+      "name": "Admin - Update Product",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [{"key": "token", "value": "{{adminToken}}", "type": "string"}]
+        },
+        "method": "PUT",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Samsung A91\",\n  \"description\": \"Updated Smartphone\",\n  \"price\": 1100\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/products/{{sku}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "admin", "products", "{{sku}}"]
+        },
+        "description": "Update product details (admin access)."
+      },
+      "response": []
+    },
+    {
+      "name": "Admin - Upload Product Image",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [{"key": "token", "value": "{{adminToken}}", "type": "string"}]
+        },
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [{"key": "file", "type": "file", "src": "<YOUR_FILE_PATH>"}]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/products/{{sku}}/image",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "admin", "products", "{{sku}}", "image"]
+        },
+        "description": "Upload or update product image (admin access)."
+      },
+      "response": []
+    },
+    {
+      "name": "Preview Product Image",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/files/preview?objectName={{objectName}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "files", "preview"],
+          "query": [{"key": "objectName", "value": "{{objectName}}"}]
+        },
+        "description": "Get a presigned URL for previewing product image."
+      },
+      "response": []
+    },
+    {
+      "name": "Download Product Image",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/files/download/{{sku}}/{{fileName}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "files", "download", "{{sku}}", "{{fileName}}"]
+        },
+        "description": "Download product image from file service."
+      },
+      "response": []
+    },
+    {
+      "name": "Admin - Enable Product",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [{"key": "token", "value": "{{adminToken}}", "type": "string"}]
+        },
+        "method": "PATCH",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/products/{{sku}}/enable",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "admin", "products", "{{sku}}", "enable"]
+        },
+        "description": "Enable a product (admin access)."
+      },
+      "response": []
+    },
+    {
+      "name": "Admin - Disable Product",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [{"key": "token", "value": "{{adminToken}}", "type": "string"}]
+        },
+        "method": "PATCH",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/products/{{sku}}/disable",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "admin", "products", "{{sku}}", "disable"]
+        },
+        "description": "Disable a product (admin access)."
+      },
+      "response": []
+    },
+    {
+      "name": "Admin - Delete Products (Batch)",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [{"key": "token", "value": "{{adminToken}}", "type": "string"}]
+        },
+        "method": "DELETE",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "[\"SKU125\", \"SKU124\"]"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/admin/products/batch",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "admin", "products", "batch"]
+        },
+        "description": "Delete multiple products by SKU (admin access)."
+      },
+      "response": []
+    },
+    {
+      "name": "Inventory Check",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [{"key": "token", "value": "{{adminToken}}", "type": "string"}]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/inventory?sku={{sku}}&quantity={{qty}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "inventory"],
+          "query": [
+            {"key": "sku", "value": "{{sku}}"},
+            {"key": "quantity", "value": "{{qty}}"}
+          ]
+        },
+        "description": "Check if requested quantity is available in inventory."
+      },
+      "response": []
+    },
+    {
+      "name": "Get All Orders",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [{"key": "token", "value": "{{adminToken}}", "type": "string"}]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/orders?page=0&size=10&status=PENDING&email=test@example.com&sort=createdAt",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "orders"],
+          "query": [
+            {"key": "page", "value": "0"},
+            {"key": "size", "value": "10"},
+            {"key": "status", "value": "PENDING"},
+            {"key": "email", "value": "test@example.com"},
+            {"key": "sort", "value": "createdAt"}
+          ]
+        },
+        "description": "Retrieve all orders, paginated, filtered by status and email."
+      },
+      "response": []
+    },
+    {
+      "name": "Get Order by Number",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [{"key": "token", "value": "{{adminToken}}", "type": "string"}]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/orders/{{orderNumber}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "orders", "{{orderNumber}}"]
+        },
+        "description": "Retrieve details of a specific order by order number."
+      },
+      "response": []
+    },
+    {
+      "name": "Create Order",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"items\": [\n    { \"sku\": \"iPhone-14-Pro\", \"productName\": \"iPhone-14-Pro\", \"price\": 1350.0, \"quantity\": 10 }\n  ],\n  \"userDetails\": {\n    \"email\": \"test@example.com\",\n    \"firstName\": \"Test\",\n    \"lastName\": \"T\"\n  }\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/orders",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "orders"]
+        },
+        "description": "Create a new order with items and user details."
+      },
+      "response": []
+    },
+    {
+      "name": "Update Order (Full)",
+      "request": {
+        "method": "PUT",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"items\": [\n    {\"sku\": \"iphone_15_pro\", \"price\": 1399.99, \"quantity\": 1}\n  ],\n  \"userDetails\": {\"email\": \"test@example.com\", \"firstName\": \"Updated\", \"lastName\": \"User\"}\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/orders/{{orderNumber}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "orders", "{{orderNumber}}"]
+        },
+        "description": "Update an existing order completely (items + user details)."
+      },
+      "response": []
+    },
+    {
+      "name": "Update Order Status",
+      "request": {
+        "method": "PATCH",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"status\": \"SHIPPED\" }"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/orders/{{orderNbr}}/status",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "orders", "{{orderNbr}}", "status"]
+        },
+        "description": "Update only the status of an order."
+      },
+      "response": []
+    },
+    {
+      "name": "Delete Order",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/orders/{{orderNumber}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "orders", "{{orderNumber}}"]
+        },
+        "description": "Delete a specific order by order number."
+      },
+      "response": []
+    }
+  ]
+}
