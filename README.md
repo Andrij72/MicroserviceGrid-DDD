@@ -40,7 +40,7 @@ Available here: 👉🔗[Old Version](https://github.com/Andrij72/MicroServiceGr
 
 ---
 
-### Current Architecture (Event-Driven / Saga-Based)
+### Current Version (Recommended Architecture)
 ✔ Event-driven communication  
 ✔ Saga pattern (choreography)  
 ✔ Kafka-based messaging  
@@ -48,7 +48,7 @@ Available here: 👉🔗[Old Version](https://github.com/Andrij72/MicroServiceGr
 
 ---
 
-## 🏗 📦 System Architecture Overview
+## 🏗 📦 High-Level Architecture (Saga-Based)
 
 ```mermaid
 graph LR
@@ -90,18 +90,8 @@ File --> Storage
 ```
 ---
 
-## 🧠 DDD Layer Structure
-```
-Client
-↓
-API Gateway
-↓
-Application Layer
-↓
-Domain Layer
-↓
-Infrastructure Layer
-```
+## 🧠 Domain-Driven Design (DDD Boundaries)
+
 Each service owns its domain and data.
 
 | Service       | Responsibility                   | Database    |
@@ -178,6 +168,26 @@ COMPLETED --> [*]
 
 ---
 
+## 📦 Order State Machine
+
+```mermaid
+stateDiagram-v2
+[*] --> PENDING
+
+PENDING --> INVENTORY_RESERVED : INVENTORY_CONFIRMED
+PENDING --> FAILED : INVENTORY_REJECTED
+
+INVENTORY_RESERVED --> PAYMENT_PROCESSING : PAYMENT_REQUESTED
+PAYMENT_PROCESSING --> PAID : PAYMENT_COMPLETED
+PAYMENT_PROCESSING --> FAILED : PAYMENT_FAILED
+
+PAID --> COMPLETED : ORDER_COMPLETED
+
+FAILED --> [*]
+COMPLETED --> [*]
+```
+
+
 ## 🔁 Saga Compensation Flow
 
 The system guarantees eventual consistency using explicit compensation events.
@@ -206,17 +216,17 @@ public void release(int quantity) {
 }
 ```
 🔴 Inventory Rejection Compensation
-INVENTORY_REJECTED
+        INVENTORY_REJECTED
 ↓
 ORDER_FAILED
 ↓ Notification sent to user
 ---
-
+       
 ## 🧠 Compensation Principles
 
 1. [ ] No distributed transactions
 2. [ ] No shared databases
-3. [ ] No cross-service rollback calls
+3. [ ] No cross-service rollback calls 
 4. [ ] Only domain events trigger compensation
 5. [ ] Each service owns its state and recovery logic
 
@@ -297,16 +307,16 @@ Payment Service integrates with:
 
 | Service                  | Description                                              | Status                 | Repository                                                             |
 |--------------------------|----------------------------------------------------------|------------------------|------------------------------------------------------------------------|
-| **Frontend (Angular)**   | Shop + Admin Panel                                       | 🚧 ~70% implemented   | [link](https://github.com/Andrij72/MicroserviceGridShopFrontEnd)       |
-| **Product Service**      | Manages product catalog                                  | ✅ Implemented        | [link](https://github.com/Andrij72/product-service)                    |
-| **Order Service**        | Handles customer orders                                  | ✅ Implemented          | [link](https://github.com/Andrij72/order-service)                      |
-| **Inventory Service**    | Tracks product stock levels                              | 🚧 In progress         | [link](https://github.com/Andrij72/inventory-service)                  |
-| **Notification Service** | Sends notifications (Email / Viber)                      | ✅ Implemented          | [link](https://github.com/Andrij72/notification-service)               |
-| **File Service**         | Manages product images (upload/preview/download)         | ✅ Implemented          | [link](https://github.com/Andrij72/file-service)                   |
-| **Discovery Service**    | Service registry (Eureka)                                | ✅ Implemented          | [link](https://github.com/Andrij72/discovery-service)                  |
-| **API Gateway**          | Central reactive entry point (Spring WebFlux)            | ✅ Implemented          | [link](https://github.com/Andrij72/api-gateway)                        |
-| **Auth Server**          | Authentication & Authorization (Keycloak / OAuth2)       | ✅ Implemented          | -                                                                 |
-| **Payment Service**      | Payment and currency operations                          | 🕓 Planned             | -                                                                      |
+| **Frontend (Angular)**    | Shop + Admin Panel                                       | 🚧 ~70% implemented   | [link](https://github.com/Andrij72/MicroserviceGridShopFrontEnd)       |
+| **Product Service**       | Manages product catalog                                  | ✅ Implemented        | [link](https://github.com/Andrij72/product-service)                    |
+| **Order Service**         | Handles customer orders                                  | ✅ Implemented          | [link](https://github.com/Andrij72/order-service)                      |
+| **Inventory Service**     | Tracks product stock levels                              | 🚧 In progress         | [link](https://github.com/Andrij72/inventory-service)                  |
+| **Notification Service**  | Sends notifications (Email / Viber)                      | ✅ Implemented          | [link](https://github.com/Andrij72/notification-service)               |
+| **File Service**          | Manages product images (upload/preview/download)         | ✅ Implemented          | [link](https://github.com/Andrij72/file-service)                   |
+| **Discovery Service**     | Service registry (Eureka)                                | ✅ Implemented          | [link](https://github.com/Andrij72/discovery-service)                  |
+| **API Gateway**           | Central reactive entry point (Spring WebFlux)            | ✅ Implemented          | [link](https://github.com/Andrij72/api-gateway)                        |
+| **Auth Server**           | Authentication & Authorization (Keycloak / OAuth2)       | ✅ Implemented          | -                                                                 |
+| **Pay Service**           | Payment and currency operations                          | 🕓 Planned             | -                                                                      |
 
 ---
 
@@ -364,8 +374,8 @@ It communicates with the API Gateway and backend microservices to provide a modu
 
 ### 1️⃣ Start Microservices (Locally)
 ```bash
-git clone https://github.com/Andrij72/MicroserviceGrid-DDD.git
-cd MicroserviceGrid-DDD
+git clone https://github.com/Andrij72/MicroserviceGrid.git
+cd microservice-grid
 docker-compose -f docker-compose.orchestrator_dev.yml up -d
 ```
 
@@ -375,7 +385,6 @@ docker-compose -f docker-compose-observability.yml up -d
 ```
 ### 🔹 Observability Stack Services
 
-### 🔹 Observability Stack Services
 
 | Service    | Host Port   | Purpose                     |
 |-----------|------------|-----------------------------|
@@ -480,7 +489,7 @@ A complete Postman collection is included for full API coverage.
 
 ---
 
-## 💡 Why This Architecture?
+## 🧠 Why This Architecture?
 
 - REST between services caused tight coupling in the previous version
 - Event-driven approach improved resilience
@@ -489,19 +498,18 @@ A complete Postman collection is included for full API coverage.
 
 ---
 
-## 🧠 What This Project Demonstrates
+## 🎯 Project Purpose
 
-This project demonstrates practical experience with:
+This project demonstrates:
 
-• Distributed system design
-• Event-driven architecture
-• Domain-Driven Design (DDD)
-• Saga pattern implementation
-• Observability-first microservice infrastructure
-• Secure service-to-service communication
-• Production-style Docker orchestration
+- Distributed system design
+- Event-driven microservices
+- Fault tolerance strategies
+- Real-world payment integration simulation
+- Observability-first architecture
 
 ---
+
 
 ## 👤 Author
 
