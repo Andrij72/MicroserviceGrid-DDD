@@ -1,5 +1,5 @@
 
-|![Java](https://img.shields.io/badge/Java-21-blue)
+![Java](https://img.shields.io/badge/Java-21-blue)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-brightgreen)
 ![Spring Cloud](https://img.shields.io/badge/Spring%20Cloud-2023.x-blueviolet)
 ![Eureka](https://img.shields.io/badge/Eureka-Service--Discovery-red)
@@ -9,9 +9,7 @@
 ![Angular](https://img.shields.io/badge/Angular-20-red)
 ![Docker](https://img.shields.io/badge/Docker-Compose-blue)
 ![Keycloak](https://img.shields.io/badge/Keycloak-OAuth2-green)
-![Observability](https://img.shields.io/badge/Observability-Prometheus%20%7C%20Grafana-yellow)   |
-
-
+![Observability](https://img.shields.io/badge/Observability-Prometheus%20%7C%20Grafana-yellow)
 
 ---
 # 🧩 MicroserviceGrid (Saga version)
@@ -51,43 +49,34 @@ Available here: 👉🔗[Old Version](https://github.com/Andrij72/MicroServiceGr
 ## 🏗 📦 System Architecture Overview
 
 ```mermaid
-graph LR
-Client[🅰️ Angular Frontend]
-Gateway[🚪 API Gateway<br>Spring WebFlux]
-Auth[🔐 Keycloak Auth]
-Discovery[🔍 Eureka Discovery]
-Kafka[🧾 Kafka Event Bus]
-Order[📦 Order Service]
-Inventory[🏬 Inventory Service]
-Payment[💳 Payment Service]
-Notification[📨 Notification Service]
-Product[🛍 Product Service]
-File[🖼 File Service]
-DB1[(🗄 MySQL)]
-DB2[(🗄 MySQL)]
-DB3[(🗄 PostgreSQL)]
-MDB[(🍃 MongoDB)]
-Storage[(☁ MinIO S3)]
+flowchart LR
+    Client["🅰️ Angular Frontend"]
+    Gateway["🚪 API Gateway<br>Spring Cloud Gateway"]
+    Discovery["🧭 Discovery Service<br>Eureka"]
+    Order["🧾 Order Service<br>Spring Boot + MySQL"]
+    Product["📦 Product Service<br>Spring Boot + MongoDB"]
+    Inventory["🏬 Inventory Service<br>Spring Boot + MySQL"]
+    Notification["📨 Notification Service"]
+    File["🖼 File Service<br>MinIO S3"]
+    Kafka["🟠 Apache Kafka"]
+    Minio["☁️ MinIO Object Storage"]
 
-Client --> Gateway
-Gateway --> Auth
-Gateway --> Discovery
-Discovery --> Order
-Discovery --> Inventory
-Discovery --> Payment
-Discovery --> Notification
-Discovery --> Product
-Discovery --> File
-Order --> Kafka
-Inventory --> Kafka
-Payment --> Kafka
-Notification --> Kafka
-Order --> DB1
-Inventory --> DB2
-Payment --> DB3
-Product --> MDB
-File --> Storage
+    Client --> Gateway
+    Gateway --> Order
+    Gateway --> Product
+    Gateway --> File
+    Order --> Inventory
+    Order --> Kafka
+    Product --> File
+    Kafka --> Notification
+    File --> Minio
 ```
+
+**Arrow explanations:**
+* Order --> Inventory – synchronous REST call to check and reserve stock
+* Order --> Kafka – publishes an event for Notification Service
+* Product --> File – Product Service interacts with File Service to store and retrieve images
+
 ---
 
 ## 🧠 DDD Layer Structure
@@ -133,6 +122,7 @@ Order->>Kafka: ORDER_CREATED
 Kafka->>Inventory: ORDER_CREATED
 Inventory-->>Kafka: INVENTORY_CONFIRMED
 Inventory-->>Kafka: INVENTORY_REJECTED
+Inventory-->>Kafka: INVENTORY_EXPIRED  
 
 alt Inventory Confirmed
     Kafka->>Payment: PAYMENT_REQUESTED
@@ -155,6 +145,12 @@ end
 
 alt Inventory Rejected
     Kafka->>Order: INVENTORY_REJECTED
+    Order->>Kafka: ORDER_FAILED
+    Kafka->>Notification: ORDER_FAILED
+end
+
+alt Inventory Expired
+    Kafka->>Order: INVENTORY_EXPIRED
     Order->>Kafka: ORDER_FAILED
     Kafka->>Notification: ORDER_FAILED
 end
@@ -227,16 +223,16 @@ This ensures:
 * Production-grade distributed behavior
 ---
 
-
 ## 🔄 Event Flow Overview
 
 **Order publishes:**
 - `ORDER_CREATED`
-
+- 
 **Inventory listens:**
 - `ORDER_CREATED`
 - publishes `INVENTORY_CONFIRMED`
 - publishes `INVENTORY_REJECTED`
+- publishes `INVENTORY_EXPIRED`
 
 **Payment listens:**
 - `INVENTORY_CONFIRMED`
