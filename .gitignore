@@ -3,6 +3,8 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+keycloak/realms/
+
 # Build folders
 build/
 !**/src/main/**/build/
