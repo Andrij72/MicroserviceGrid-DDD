@@ -12,8 +12,8 @@
 ![Observability](https://img.shields.io/badge/Observability-Prometheus%20%7C%20Grafana-yellow)
 
 ---
-# 🧩 MicroserviceGrid (Saga version)
-**MicroserviceGrid** is a full-fledged microservices system built on **Spring Boot 3 / Spring Cloud**,  
+# 🧩 MicroserviceGrid-DDD (Saga version)
+**MicroserviceGrid-DDD** is a full-fledged microservices system built on **Spring Boot 3 / Spring Cloud**,  
 featuring a reactive entry point, asynchronous communication, fault-tolerance,  
 monitoring, and centralized management via **Docker Compose**.
 
@@ -53,22 +53,46 @@ flowchart LR
     Client["🅰️ Angular Frontend"]
     Gateway["🚪 API Gateway<br>Spring Cloud Gateway"]
     Discovery["🧭 Discovery Service<br>Eureka"]
+
     Order["🧾 Order Service<br>Spring Boot + MySQL"]
     Product["📦 Product Service<br>Spring Boot + MongoDB"]
     Inventory["🏬 Inventory Service<br>Spring Boot + MySQL"]
+    Payment["💳 Payment Service"]
     Notification["📨 Notification Service"]
+
     File["🖼 File Service<br>MinIO S3"]
-    Kafka["🟠 Apache Kafka"]
     Minio["☁️ MinIO Object Storage"]
 
+    Kafka["🟠 Apache Kafka"]
+
+    %% Client layer
     Client --> Gateway
+
+    %% Gateway routing (sync - OK)
     Gateway --> Order
     Gateway --> Product
     Gateway --> File
-    Order --> Inventory
+
+    %% Service Discovery (implicit usage)
+    Gateway -.-> Discovery
+    Order -.-> Discovery
+    Product -.-> Discovery
+    Inventory -.-> Discovery
+    Payment -.-> Discovery
+    Notification -.-> Discovery
+
+    %% Event-driven communication через Kafka
     Order --> Kafka
-    Product --> File
+    Inventory --> Kafka
+    Payment --> Kafka   
+
+    Kafka --> Order
+    Kafka --> Inventory
+    Kafka --> Payment
     Kafka --> Notification
+
+    %% File service (це ок залишити синхронним)
+    Product --> File
     File --> Minio
 ```
 
@@ -81,15 +105,15 @@ flowchart LR
 
 ## 🧠 DDD Layer Structure
 ```
-Client
-↓
-API Gateway
-↓
-Application Layer
-↓
-Domain Layer
-↓
-Infrastructure Layer
+    Client
+    ↓
+    API Gateway
+    ↓
+    Application Layer
+    ↓
+    Domain Layer
+    ↓
+    Infrastructure Layer
 ```
 Each service owns its domain and data.
 
@@ -162,12 +186,16 @@ end
 ```mermaid
 stateDiagram-v2
 [*] --> PENDING
+
 PENDING --> INVENTORY_RESERVED : INVENTORY_CONFIRMED
 PENDING --> FAILED : INVENTORY_REJECTED
+PENDING --> FAILED : INVENTORY_EXPIRED
+
 INVENTORY_RESERVED --> PAYMENT_PROCESSING : PAYMENT_REQUESTED
-PAYMENT_PROCESSING --> PAID : PAYMENT_COMPLETED
+
+PAYMENT_PROCESSING --> COMPLETED : PAYMENT_COMPLETED
 PAYMENT_PROCESSING --> FAILED : PAYMENT_FAILED
-PAID --> COMPLETED : ORDER_COMPLETED
+
 FAILED --> [*]
 COMPLETED --> [*]
 ```
@@ -201,11 +229,18 @@ public void release(int quantity) {
     availableQuantity += quantity;
 }
 ```
-🔴 Inventory Rejection Compensation
+### 🔴 Inventory Rejection Compensation
 INVENTORY_REJECTED
 ↓
 ORDER_FAILED
 ↓ Notification sent to user
+
+### 🔴 Inventory Expiration Compensation
+INVENTORY_EXPIRED
+↓
+ORDER_FAILED
+↓
+Notification sent to user
 ---
 
 ## 🧠 Compensation Principles
@@ -227,7 +262,9 @@ This ensures:
 
 **Order publishes:**
 - `ORDER_CREATED`
-- 
+- `ORDER_FAILED`
+- `ORDER_COMPLETED`
+
 **Inventory listens:**
 - `ORDER_CREATED`
 - publishes `INVENTORY_CONFIRMED`
@@ -244,9 +281,8 @@ This ensures:
 - `PAYMENT_FAILED`
 
 **Notification listens:**
-- `ORDER_PAID`
-- `ORDER_FAILED`
 - `ORDER_COMPLETED`
+- `ORDER_FAILED`
 
 ---
 
