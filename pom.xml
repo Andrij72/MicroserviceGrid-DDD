@@ -11,6 +11,9 @@
 
     <name>Microservice Grid Orchestrator</name>
     <description>Root orchestrator project for MicroserviceGrid architecture — manages Docker Compose and deployment setup</description>
+    <modules>
+        <module>tests-e2e</module>
+    </modules>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
