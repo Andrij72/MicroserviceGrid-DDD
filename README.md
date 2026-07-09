@@ -91,7 +91,7 @@ flowchart LR
     Kafka --> Payment
     Kafka --> Notification
 
-    %% File service (це ок залишити синхронним)
+    %% File service 
     Product --> File
     File --> Minio
 ```
@@ -327,18 +327,19 @@ Payment Service integrates with:
 
 ## 🧠 Services Overview
 
-| Service                  | Description                                              | Status                 | Repository                                                             |
-|--------------------------|----------------------------------------------------------|------------------------|------------------------------------------------------------------------|
-| **Frontend (Angular)**   | Shop + Admin Panel                                       | 🚧 ~70% implemented   | [link](https://github.com/Andrij72/MicroserviceGridShopFrontEnd)       |
-| **Product Service**      | Manages product catalog                                  | ✅ Implemented        | [link](https://github.com/Andrij72/product-service)                    |
-| **Order Service**        | Handles customer orders                                  | ✅ Implemented          | [link](https://github.com/Andrij72/order-service)                      |
-| **Inventory Service**    | Tracks product stock levels                              | 🚧 In progress         | [link](https://github.com/Andrij72/inventory-service)                  |
-| **Notification Service** | Sends notifications (Email / Viber)                      | ✅ Implemented          | [link](https://github.com/Andrij72/notification-service)               |
-| **File Service**         | Manages product images (upload/preview/download)         | ✅ Implemented          | [link](https://github.com/Andrij72/file-service)                   |
-| **Discovery Service**    | Service registry (Eureka)                                | ✅ Implemented          | [link](https://github.com/Andrij72/discovery-service)                  |
-| **API Gateway**          | Central reactive entry point (Spring WebFlux)            | ✅ Implemented          | [link](https://github.com/Andrij72/api-gateway)                        |
-| **Auth Server**          | Authentication & Authorization (Keycloak / OAuth2)       | ✅ Implemented          | -                                                                 |
-| **Payment Service**      | Payment and currency operations                          | 🕓 Planned             | -                                                                      |
+| Service                  | Description                                              | Status                  | Repository                                                           |
+|--------------------------|----------------------------------------------------------|-------------------------|----------------------------------------------------------------------|
+| **Frontend (Angular)**   | Shop + Admin Panel                                       | 🚧 ~70% implemented     | [link](https://github.com/Andrij72/MicroserviceGridShopFrontEnd)     |
+| **Product Service**      | Manages product catalog                                  | ✅ Implemented           | [link](https://github.com/Andrij72/product-service)                  |
+| **Order Service**        | Handles customer orders                                  | ✅ Implemented           | [link](https://github.com/Andrij72/order-service)                    |
+| **Inventory Service**    | Tracks product stock levels                              | ✅ Implemented           | [link](https://github.com/Andrij72/inventory-service)                |
+| **Notification Service** | Sends notifications (Email / Viber)                      | ✅ Implemented           | [link](https://github.com/Andrij72/notification-service)             |
+| **File Service**         | Manages product images (upload/preview/download)         | ✅ Implemented           | [link](https://github.com/Andrij72/file-service)                     |
+| **Discovery Service**    | Service registry (Eureka)                                | ✅ Implemented           | [link](https://github.com/Andrij72/discovery-service)                |
+| **API Gateway**          | Central reactive entry point (Spring WebFlux)            | ✅ Implemented           | [link](https://github.com/Andrij72/api-gateway)                      |
+| **Auth Server**          | Authentication & Authorization (Keycloak / OAuth2)       | ✅ Implemented           | -                                                                    |
+| **Payment Service**      | Payment and currency operations                          | 🕓 Planned              | -                                                                    |
+
 
 ---
 
