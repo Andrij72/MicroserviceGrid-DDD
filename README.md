@@ -345,8 +345,8 @@ Payment Service integrates with:
 
 ## 📦 Storage & Data Strategy
 
-| Service     | Database                  | Purpose                                     |
-|------------|---------------------------|----------------------------------------------|
+| Service     | Database                  | Purpose                                      |
+|-------------|---------------------------|----------------------------------------------|
 | 📦 Order    | MySQL                     | Order lifecycle, business state management  |
 | 🏬 Inventory | MySQL                     | Stock tracking and reservation             |
 | 💳 Payment  | PostgreSQL                | Transaction processing                      |
@@ -361,7 +361,7 @@ Payment Service integrates with:
 ## 📊 Observability Stack
 
 | Tool       | Purpose             |
-|-----------|--------------------|
+|------------|---------------------|
 | Prometheus | Metrics             |
 | Grafana    | Visualization       |
 | Loki       | Logging             |
@@ -493,33 +493,12 @@ A complete Postman collection is included for full API coverage.
 - Kubernetes (planned) for orchestration and scalability
 
 ---
-
-## 🔮 Roadmap (Practical)
-
-- Inventory concurrency protection (locking / optimistic control)
-- Saga compensation improvements
-- Load testing
-- Production Kubernetes deployment
-
-### Future Enterprise Improvements
-
-**Short Term**
-- Inventory distributed locking
-- Saga monitoring dashboard
-
-**Mid Term**
-- Kubernetes autoscaling
-- Event streaming analytics
-
----
-
 ## 💡 Why This Architecture?
 
 - REST between services caused tight coupling in the previous version
 - Event-driven approach improved resilience
 - Each service owns its data
-- Saga ensures eventual consistency without distributed transactions
-
+- Saga ensures eventual consistency without distributed transactions  
 ---
 
 ## 🧠 What This Project Demonstrates
